@@ -1,0 +1,36 @@
+# Manual requests for a running variant.
+# Set baseUrl to the endpoint shown in the Aspire dashboard (or the URL printed on startup).
+@baseUrl = http://localhost:5000
+
+### 1. Reset: 1 product with 10 copies (Development only)
+POST {{baseUrl}}/test-support/reset
+Content-Type: application/json
+
+{ "productCount": 1, "initialStock": 10 }
+
+### 2. Buy 3 copies of product 1 -> 201 Created
+POST {{baseUrl}}/purchases
+Content-Type: application/json
+
+{ "productId": 1, "quantity": 3 }
+
+### 3. Buy more than available -> 409 Conflict
+POST {{baseUrl}}/purchases
+Content-Type: application/json
+
+{ "productId": 1, "quantity": 100 }
+
+### 4. Invalid quantity -> 400 Bad Request
+POST {{baseUrl}}/purchases
+Content-Type: application/json
+
+{ "productId": 1, "quantity": 0 }
+
+### 5. Unknown product -> 404 Not Found
+POST {{baseUrl}}/purchases
+Content-Type: application/json
+
+{ "productId": 999, "quantity": 1 }
+
+### 6. Summary: initial stock, remaining stock, sold, oversold
+GET {{baseUrl}}/test-support/summary

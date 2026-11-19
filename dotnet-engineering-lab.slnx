@@ -1,2 +1,9 @@
 <Solution>
+  <Folder Name="/experiments/" />
+  <Folder Name="/experiments/2.1-last-copy/">
+    <Project Path="experiments/2.1-last-copy/src/LastCopy.AppHost/LastCopy.AppHost.csproj" />
+    <Project Path="experiments/2.1-last-copy/src/LastCopy.Shared/LastCopy.Shared.csproj" />
+    <Project Path="experiments/2.1-last-copy/src/LastCopy.V0.Naive/LastCopy.V0.Naive.csproj" />
+    <Project Path="experiments/2.1-last-copy/tests/LastCopy.Tests/LastCopy.Tests.csproj" />
+  </Folder>
 </Solution>
