@@ -1,0 +1,19 @@
+<!-- Keep the SDK version equal to the Aspire.Hosting.SqlServer package version in Directory.Packages.props. -->
+<Project Sdk="Aspire.AppHost.Sdk/13.6.5">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>2b7c1e0a-5f3d-4c8e-9a61-7d2e4b9f1c35</UserSecretsId>
+    <!-- DCP and the dashboard come from NuGet packages, so `dotnet run` works without installing the Aspire CLI. -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LastCopy.V0.Naive\LastCopy.V0.Naive.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.SqlServer" />
+  </ItemGroup>
+
+</Project>
