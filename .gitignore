@@ -1,0 +1,42 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+TestResults/
+*.trx
+coverage*.xml
+coverage*.json
+StrykerOutput/
+
+# IDEs
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.user
+*.suo
+*.userprefs
+*.DotSettings.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets and local settings
+*.env
+.env.*
+appsettings.*.local.json
+secrets.json
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/packages/
+
+# Node (k6 tooling, Angular later)
+node_modules/
+
+# k6 raw output that should not be committed (summaries in results/ are committed)
+experiments/**/results/raw/

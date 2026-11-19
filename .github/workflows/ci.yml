@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # Steps below run only once the solution contains projects.
+      - name: Restore
+        if: hashFiles('**/*.csproj') != ''
+        run: dotnet restore dotnet-engineering-lab.slnx
+
+      - name: Check formatting
+        if: hashFiles('**/*.csproj') != ''
+        run: dotnet format dotnet-engineering-lab.slnx --verify-no-changes --no-restore
+
+      - name: Build
+        if: hashFiles('**/*.csproj') != ''
+        run: dotnet build dotnet-engineering-lab.slnx -c Release --no-restore
+
+      # Testcontainers works on ubuntu-latest runners: Docker is preinstalled.
+      - name: Test
+        if: hashFiles('**/*.csproj') != ''
+        run: dotnet test dotnet-engineering-lab.slnx -c Release --no-build --logger "trx;LogFileName=results.trx"
+
+      - name: Upload test results
+        if: always() && hashFiles('**/*.trx') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/TestResults/*.trx'
