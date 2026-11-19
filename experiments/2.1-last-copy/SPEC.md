@@ -36,7 +36,7 @@ Defaults chosen for the first iteration (can be changed in review): SQL Server a
 | FR-2.1-02 | Each variant V0–V4 is a separate, independently runnable service exposing the same API, so the same load scenario runs against each one unchanged. |
 | FR-2.1-03 | For variants V1–V4, stock never becomes negative and the number of successful purchases never exceeds the initial stock. |
 | FR-2.1-04 | A test-support endpoint resets the database to a known seed (product IDs and initial stock) before each run. It is enabled only in the Development environment. |
-| FR-2.1-05 | Each variant records how many retries (V1), deadlocks or lock timeouts (V2) and rejected purchases it handled, exposed as OpenTelemetry metrics. |
+| FR-2.1-05 | Each variant records how many retries (V1), deadlocks or lock timeouts (V2) and rejected purchases it handled, exposed as OpenTelemetry metrics. **Status:** implemented for purchase outcomes (all variants, see [Telemetry](#telemetry)); retries and deadlocks/lock timeouts are added with V1 and V2. |
 
 ## Non-functional requirements
 
@@ -67,6 +67,26 @@ For every variant and scenario:
 
 Each scenario runs at least 3 times per variant; results report the median and spread.
 
+## Telemetry
+
+Implements FR-2.1-05 and NFR-2.1-03. Every variant calls `AddServiceDefaults()` (`LastCopy.ServiceDefaults`) and registers its purchase logic with `AddInstrumentedPurchaseService<TService>()` (`LastCopy.Shared`). The decorator records the metrics and spans below, so variant code contains no telemetry.
+
+Purchase metrics (meter `LastCopy.Purchases`):
+
+| Instrument | Type | Unit | Tags | Meaning |
+| --- | --- | --- | --- | --- |
+| `lastcopy.purchases` | Counter&lt;long&gt; | `{purchase}` | `variant`, `outcome` | Purchase attempts handled by the purchase service |
+| `lastcopy.purchase.duration` | Histogram&lt;double&gt; | `s` | `variant`, `outcome` | Time spent in the purchase service per attempt |
+
+- `outcome`: `succeeded`, `insufficient_stock` (409), `product_not_found` (404).
+- `variant`: from configuration `LastCopy:Variant` (e.g. `v0-naive`); the AppHost sets it through `LastCopy__Variant`.
+- Histogram buckets match ASP.NET Core `http.server.request.duration` (5 ms to 10 s).
+- Requests rejected by input validation (400) never reach the purchase service and are not counted; they appear in `http.server.request.duration` with `http.response.status_code=400`.
+
+Purchase spans (activity source `LastCopy.Purchases`): one `lastcopy.purchase` span per attempt, a child of the ASP.NET Core request span and parent of the SqlClient spans, with tags `product_id`, `quantity`, `variant`, `outcome`.
+
+Also collected through ServiceDefaults: ASP.NET Core, HttpClient and SqlClient traces; ASP.NET Core, HttpClient and .NET runtime metrics; logs. All are exported over OTLP when `OTEL_EXPORTER_OTLP_ENDPOINT` is set (Aspire sets it).
+
 ## Acceptance criteria
 
 | ID | Given / When / Then | Verified by |
@@ -96,3 +116,6 @@ Each scenario runs at least 3 times per variant; results report the median and s
 
 1. Should V4 also get a variant with an external queue (RabbitMQ) to make it work across multiple instances, or stay in-process for this experiment?
 2. Retry policy for V1: how many retries and which backoff? To be decided in an experiment ADR after a first run.
+3. FR-2.1-05 says "rejected purchases". The metrics count `insufficient_stock` and `product_not_found` as separate outcomes and do not count 400 responses (they never reach the purchase service). Is "rejected" meant to be only `insufficient_stock` (409), which is what the results format calls `rejected`?
+4. Purchases that fail with an exception (database errors, timeouts) are not recorded as a purchase outcome: they show as failed `lastcopy.purchase` spans and as 5xx in `http.server.request.duration`. Should they get their own outcome (e.g. `error`) so the error rate per variant can be read from one metric?
+5. Should a successful V1 purchase that needed retries keep `outcome=succeeded` and report retries only through a separate instrument, or should retries also be visible on the purchase metrics (e.g. a `retried` tag)?

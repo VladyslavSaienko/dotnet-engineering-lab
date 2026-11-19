@@ -6,7 +6,9 @@ var sql = builder.AddSqlServer("sql")
 
 var inventory = sql.AddDatabase("inventory");
 
+// LastCopy__Variant becomes the "variant" tag on purchase metrics and traces.
 builder.AddProject<Projects.LastCopy_V0_Naive>("v0-naive")
+    .WithEnvironment("LastCopy__Variant", "v0-naive")
     .WithReference(inventory)
     .WaitFor(inventory);
 

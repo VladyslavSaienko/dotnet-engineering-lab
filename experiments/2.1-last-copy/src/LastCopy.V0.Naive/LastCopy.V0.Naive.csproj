@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LastCopy.Shared\LastCopy.Shared.csproj" />
+    <ProjectReference Include="..\LastCopy.ServiceDefaults\LastCopy.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
