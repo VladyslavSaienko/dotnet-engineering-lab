@@ -37,7 +37,7 @@ jobs:
       # Testcontainers works on ubuntu-latest runners: Docker is preinstalled.
       - name: Test
         if: hashFiles('**/*.csproj') != ''
-        run: dotnet test dotnet-engineering-lab.slnx -c Release --no-build --logger "trx;LogFileName=results.trx"
+        run: dotnet test dotnet-engineering-lab.slnx -c Release --no-build --report-trx
 
       - name: Upload test results
         if: always() && hashFiles('**/*.trx') != ''
