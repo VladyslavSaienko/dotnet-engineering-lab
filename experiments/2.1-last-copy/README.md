@@ -26,6 +26,10 @@ The dashboard receives telemetry over HTTPS. If the ASP.NET Core development cer
 dotnet dev-certs https --trust
 ```
 
+## Load runs
+
+k6 scenarios LS-2.1-01..03 and the runner that writes results to `results/`: [load/README.md](load/README.md).
+
 ## Where to see the telemetry
 
 Open the dashboard and pick the `v0-naive` resource.

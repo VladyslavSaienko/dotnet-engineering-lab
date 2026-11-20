@@ -1,0 +1,33 @@
+{
+  "experiment": "2.1",
+  "variant": "V0",
+  "scenario": "LS-2.1-01",
+  "run": 1,
+  "timestampUtc": "2026-11-20T01:47:50Z",
+  "environment": {
+    "machine": "AMD Ryzen 7 4800H with Radeon Graphics, 15.9 GB",
+    "os": "Microsoft Windows 10 Pro 10.0.19045",
+    "cpu": "AMD Ryzen 7 4800H with Radeon Graphics",
+    "cores": 8,
+    "logicalProcessors": 16,
+    "ramGb": 15.9,
+    "dockerMemoryGb": 7.8,
+    "dotnet": "10.0.15",
+    "sqlServerImage": "mcr.microsoft.com/mssql/server:2022-latest@sha256:4525e3efac9f3e241cb003bb2ff2a82818b502f37e12049d788b1a9fa7e13b7f",
+    "k6": "2.4.0"
+  },
+  "metrics": {
+    "requestsPerSecond": 148.2,
+    "latencyMs": {
+      "p50": 6675.07,
+      "p95": 6723.8,
+      "p99": 6729.03
+    },
+    "succeeded": 490,
+    "rejected": 510,
+    "errors": 0,
+    "oversold": 480,
+    "retries": null,
+    "deadlocks": null
+  }
+}
