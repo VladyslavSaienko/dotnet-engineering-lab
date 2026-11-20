@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/VladyslavSaienko/dotnet-engineering-lab/blob/main/docs/schemas/load-result.schema.json",
+  "title": "Load run result",
+  "description": "One load run of one variant and scenario, as defined in ADR 0003.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["experiment", "variant", "scenario", "run", "timestampUtc", "environment", "metrics"],
+  "properties": {
+    "experiment": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "variant": { "type": "string", "minLength": 1 },
+    "scenario": { "type": "string", "minLength": 1 },
+    "run": { "type": "integer", "minimum": 1 },
+    "timestampUtc": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "environment": {
+      "type": "object",
+      "description": "Measurement conditions. Fields beyond the required ones are allowed for experiment-specific details.",
+      "required": ["machine", "os", "cpu", "cores", "ramGb", "dotnet", "k6"],
+      "properties": {
+        "machine": { "type": "string", "minLength": 1 },
+        "os": { "type": "string", "minLength": 1 },
+        "cpu": { "type": "string", "minLength": 1 },
+        "cores": { "type": "integer", "minimum": 1 },
+        "logicalProcessors": { "type": "integer", "minimum": 1 },
+        "ramGb": { "type": "number", "exclusiveMinimum": 0 },
+        "dockerMemoryGb": { "type": "number", "exclusiveMinimum": 0 },
+        "dotnet": { "type": "string", "minLength": 1 },
+        "sqlServerImage": { "type": "string", "minLength": 1 },
+        "k6": { "type": "string", "minLength": 1 }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Metrics that do not apply to a variant are omitted or null. Experiment-specific metrics are allowed.",
+      "required": ["requestsPerSecond", "latencyMs", "succeeded", "rejected", "errors"],
+      "properties": {
+        "requestsPerSecond": { "type": "number", "minimum": 0 },
+        "latencyMs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["p50", "p95", "p99"],
+          "properties": {
+            "p50": { "type": "number", "minimum": 0 },
+            "p95": { "type": "number", "minimum": 0 },
+            "p99": { "type": "number", "minimum": 0 }
+          }
+        },
+        "succeeded": { "$ref": "#/$defs/count" },
+        "rejected": { "$ref": "#/$defs/count" },
+        "errors": { "$ref": "#/$defs/count" },
+        "oversold": { "$ref": "#/$defs/optionalCount" },
+        "retries": { "$ref": "#/$defs/optionalCount" },
+        "deadlocks": { "$ref": "#/$defs/optionalCount" }
+      }
+    }
+  },
+  "$defs": {
+    "count": { "type": "integer", "minimum": 0 },
+    "optionalCount": { "type": ["integer", "null"], "minimum": 0 }
+  }
+}

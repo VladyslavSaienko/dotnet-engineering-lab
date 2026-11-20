@@ -1,0 +1,13 @@
+{
+  "name": "lastcopy-load",
+  "private": true,
+  "description": "Tooling for the experiment 2.1 load runs. The load scripts themselves run in k6, not Node.",
+  "type": "module",
+  "scripts": {
+    "validate": "node tools/validate-results.mjs ../results"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

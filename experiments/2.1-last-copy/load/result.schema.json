@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/VladyslavSaienko/dotnet-engineering-lab/blob/main/experiments/2.1-last-copy/load/result.schema.json",
+  "title": "Experiment 2.1 load run result",
+  "description": "The shared ADR 0003 format, plus the fields every 2.1 result must carry. Not applicable metrics are null, not omitted.",
+  "allOf": [
+    { "$ref": "https://github.com/VladyslavSaienko/dotnet-engineering-lab/blob/main/docs/schemas/load-result.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "experiment": { "type": "string", "const": "2.1" },
+        "variant": { "type": "string", "pattern": "^V[0-9]+$" },
+        "scenario": { "type": "string", "enum": ["LS-2.1-01", "LS-2.1-02", "LS-2.1-03"] },
+        "environment": { "type": "object", "required": ["logicalProcessors", "dockerMemoryGb", "sqlServerImage"] },
+        "metrics": { "type": "object", "required": ["oversold", "retries", "deadlocks"] }
+      }
+    }
+  ]
+}
